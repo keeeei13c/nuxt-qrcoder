@@ -10,7 +10,7 @@
     </p>
 
     <div style="height: 200px; width: 200px;">
-      <qrcode-stream @detect="onDetect" @error="onError" />
+      <qrcode-stream @detect="onDetect" @error="onError" :track="paintOutline" />
     </div>
     
   </div>
@@ -46,6 +46,24 @@ const onDetect = (detectedCodes: [any]) => {
 
 const onError = (err: { name: keyof ErrorMessages; message: any; }) => {
   error.value = `[${err.name}]: ` + (errorMessages[err.name as keyof ErrorMessages] || err.message)
+}
+
+
+const paintOutline = (detectedCodes: any, ctx: any) => {
+  for (const detectedCode of detectedCodes) {
+        const [firstPoint, ...otherPoints] = detectedCode.cornerPoints
+
+        ctx.strokeStyle = 'red'
+
+        ctx.beginPath()
+        ctx.moveTo(firstPoint.x, firstPoint.y)
+        for (const { x, y } of otherPoints) {
+          ctx.lineTo(x, y)
+        }
+        ctx.lineTo(firstPoint.x, firstPoint.y)
+        ctx.closePath()
+        ctx.stroke()
+      }
 }
 </script>
 
